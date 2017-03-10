@@ -64,5 +64,5 @@ class Read:
 
 
 if __name__ == '__main__':
-    Image.eval()
+
     pass
