@@ -28,10 +28,10 @@ def open(fp):
     :return: return a file object.
     '''
 
-    if not is_file_exists((fg)):
+    if not is_file_exists((fp)):
         raise IOError("%r file path not found" % fp)
 
-    return Image.open(fg)
+    return Image.open(fp)
 
 
 class Pure:
@@ -45,9 +45,44 @@ class Pure:
         :param im: image file object (Image object).
         '''
 
-        self.im = im
+        self.im = im.convert('L')
+        self.load()
 
-    def check(self):
+    def load(self):
+        '''
+        update current image size
+
+        :return:None
+        '''
+        self.size = self.im.size
+
+    def crop(self, box=None):
+        '''
+        Crop image
+        :param length:int
+        :param width: int
+        :return:
+        '''
+
+        if box == None:
+            return self.im.copy()
+
+        self.im = self.im.crop(box)
+        return self.im.crop(box)
+
+    def set_2_value(self):
+        '''
+        set image to two value, 0 black, 255 white
+        :return:None
+        '''
+
+        self.load()
+        self.im = self.im.point(lambda i: 0 if (i < 80) else 255)
+        # for x in range(1, self.size[0] - 1):
+        #     for y in range(1, self.size[1] - 1):
+        #         print(x, y)
+
+    def show(self):
         self.im.show()
 
     def test(self):
@@ -64,5 +99,9 @@ class Read:
 
 
 if __name__ == '__main__':
-
-    pass
+    im = open('0AFO9PP5Q1 ')
+    im_obj = Pure(im)
+    im_obj.crop((5, 5, 60, 22))
+    im_obj.show()
+    im_obj.set_2_value()
+    im_obj.show()
