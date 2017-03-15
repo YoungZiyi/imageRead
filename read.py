@@ -1,9 +1,7 @@
 #coding=utf-8
 
 import os, sys
-
-from PIL import Image
-
+from PIL import Image, ImageFilter
 import logging
 
 logger = logging.getLogger(__name__)
@@ -70,17 +68,27 @@ class Pure:
         self.im = self.im.crop(box)
         return self.im.crop(box)
 
-    def set_2_value(self):
+    def binaryzation(self, value=80):
         '''
         set image to two value, 0 black, 255 white
         :return:None
         '''
 
         self.load()
-        self.im = self.im.point(lambda i: 0 if (i < 80) else 255)
-        # for x in range(1, self.size[0] - 1):
-        #     for y in range(1, self.size[1] - 1):
-        #         print(x, y)
+        self.im = self.im.point(lambda i: 0 if (i < value) else 255)
+
+    def denoising(self):
+        '''
+        remove noise dot.
+        :return:
+        '''
+
+        self.load()
+        px = self.im.load()
+
+        # for i in range(self.size[0]):
+        #     for j in range(self.size[1]):
+        #         print(px[i, j])
 
     def show(self):
         self.im.show()
@@ -90,18 +98,20 @@ class Pure:
         pass
 
 
-
 class Cut:
     pass
+
 
 class Read:
     pass
 
 
 if __name__ == '__main__':
-    im = open('0AFO9PP5Q1 ')
+    im = open('sample/qiangzhi/MZWW7PC4JI')
     im_obj = Pure(im)
-    im_obj.crop((5, 5, 60, 22))
-    im_obj.show()
-    im_obj.set_2_value()
-    im_obj.show()
+    # im_obj.show() # original picture in 'L' mode
+    im_obj.crop((5, 5, 65, 22))
+    # im_obj.show() # crop characters region
+    im_obj.binaryzation(100)
+    # im_obj.show() # set to 2 value
+    im_obj.denoising()
