@@ -85,6 +85,9 @@ class Pure:
 
         self.load()
         px = self.im.load()
+        print(self.size)
+        for i in range(self.size[0]):
+            self.im.put
 
         # for i in range(self.size[0]):
         #     for j in range(self.size[1]):
