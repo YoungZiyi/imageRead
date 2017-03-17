@@ -152,6 +152,25 @@ class Read:
             y = c[h + 1]+1
             ch_list.append(self.im.crop((x, 0, y, w)))
 
+        self.ch_list = []
+        self.ch_list = self.remove_white_in_y(ch_list)
+
+        n = len(self.ch_list)
+        if n < 4:
+            self.ch_list = self.separate(n)
+        elif n > 4:
+            raise Exception('more than 4 characters, must be wrong')
+        for u in self.ch_list:
+            u.show()
+
+    def remove_white_in_y(self, ch_list):
+        '''
+        remove the blank row in y direction
+        :param ch_list: a list of characters image
+        :return: c_list
+        '''
+
+        c_list = []
         for ch in ch_list:
             ch_px = ch.load()
             ch_size = ch.size
@@ -164,26 +183,43 @@ class Read:
                         break
             x = y_list[0]
             y = y_list[-1]+1
-            self.ch_list.append(ch.crop((0, x, l, y)))
-
-        n = len(self.ch_list)
-        if n < 4:
-            self.separate(n)
-        elif n > 4:
-            raise Exception('more than 4 characters, must be wrong')
+            c_list.append(ch.crop((0, x, l, y)))
+        return c_list
 
     def separate(self, n):
+        '''
+        n is the number of pictures in self.ch_lsit
+        :param n:
+        :return: the character image list
+        '''
+        c_list = []
         for i in range(n):
             size = self.ch_list[i].size
-            int(size[0] / 10)
-        pass
+            c = int(size[0] / 10)
+            if c == 0: c = 1
+            sx = int(size[0] / c)
+            n = 1
+            while(c >= 1):
+                if c == 1:
+                    c_im = self.ch_list[i].crop(  (  (n - 1) * sx, 0, size[0], size[1]  )  )
+                else:
+                    c_im = self.ch_list[i].crop( ((n - 1) * sx, 0, n * sx + 1, size[1])  )
+                c_list.append(c_im)
+                n = n + 1
+                c = c - 1
+
+        if len(c_list) == 4:
+            c_list = self.remove_white_in_y(c_list)
+            if len(c_list) == 4:
+                return c_list
+        return []
 
     def show(self):
         self.im.show()
 
 
 if __name__ == '__main__':
-    im = open('sample/qiangzhi/ZRQBPXOGRQ')
+    im = open('sample/qiangzhi/S18C0HOMEW')
     im_obj = Read(im)
     # im_obj.show() # original picture in 'L' mode
     im_obj.crop((5, 5, 65, 22))
